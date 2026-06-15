@@ -1,33 +1,35 @@
 import os
-import argparse
 from dotenv import load_dotenv
 from notionCli import NotionFetcher
 from trans import Parser
-from builder import Builder
 
-# .envファイルからAPIキーを読み込み
+# .envファイルからAPIキーを読み込む
 load_dotenv()
-NOTION_API_KEY = os.getenv("NOTION_API_KEY")
+NotionAPIKey = os.getenv("NotionAPIKey")
 
 def main():
-    parser = argparse.ArgumentParser(description="NotionからPowerPointを生成します")
-    parser.add_argument("page_id", help="スライド化したいNotionページのID")
-    args = parser.parse_args()
+    # ここにNotionページのIDを貼り付け
+    PAGE_ID = "380e3a3403dd809fa664fa68db8d9a8b" 
 
-    # データの取得
-    fetcher = NotionFetcher(NOTION_API_KEY)
-    raw_blocks = fetcher.get_blocks(args.page_id)
+    # 1. Fetch層：データの取得
+    print("Notionからデータを取得しています...")
+    fetcher = NotionFetcher(NotionAPIKey)
+    rawBlocks = fetcher.getBlocks(PAGE_ID)
 
-    # データの解析と変換
+    # 2. Transform層：データの解析と変換
+    print("データを解析しています...")
     parser = Parser()
-    slide_data = parser.parse_blocks(raw_blocks)
+    parsedBlocks = parser.parseBlocks(rawBlocks)
 
-    # パワポの生成
-    builder = Builder("assets/template.pptx")
-    output_path = f"output_{args.page_id}.pptx"
-    builder.create_presentation(slide_data, output_path)
-
-    print(f"生成完了: {output_path}")
+    # 結果を表示
+    print("\n解析完了！抽出されたデータは以下の通りです：\n")
+    for item in parsedBlocks:
+        if item["type"] == "image":
+            # 画像ブロックの場合は url を表示
+            print(f"[{item['type']}]\n{item['url']}")
+        else:
+            # それ以外のテキストブロックの場合は text を表示
+            print(f"[{item['type']}]\n{item['text']}")
 
 if __name__ == "__main__":
     main()
