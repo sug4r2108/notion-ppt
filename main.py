@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 from notionCli import NotionFetcher
 from trans import Parser
@@ -9,8 +10,16 @@ NotionAPIKey = os.getenv("NotionAPIKey")
 
 def main():
     # ご自身のページIDを設定してください
-    PAGE_ID = "380e3a3403dd809fa664fa68db8d9a8b" 
-    OUTPUT_FILE = "output.pptx"
+    PAGE_ID = "380e3a3403dd809fa664fa68db8d9a8b"
+
+    now = datetime.now()
+    timeStamp = now.strftime("%Y%m%d")
+
+    # 出力先のフォルダ、ファイルの決定
+    OUTPUT_DIR = "output"
+    OUTPUT_FILENAME = f"VSeminer{timeStamp}.pptx"
+
+    OUTPUT_FILE = os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
 
     try:
         # 1. Fetch層：データの取得

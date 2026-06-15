@@ -6,4 +6,4 @@ __pycache__/
 *.pyc
 
 # 生成される.pptxファイル
-*.pptx
+output/
