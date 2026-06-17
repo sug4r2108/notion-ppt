@@ -5,5 +5,8 @@
 __pycache__/
 *.pyc
 
+# テンプレート.pptxファイル
+assets/
+
 # 生成される.pptxファイル
 output/
