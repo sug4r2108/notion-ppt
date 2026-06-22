@@ -1,4 +1,4 @@
-class Parser:
+class BlockParser:
     def __init__(self):
         pass
 

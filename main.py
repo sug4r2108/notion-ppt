@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 from notionCli import NotionFetcher
-from trans import Parser
+from parser import BlockParser
 from builder import PptxBuilder
 
 load_dotenv()
@@ -29,7 +29,7 @@ def main():
 
         # 2. Transform層：データの解析と変換
         print("データを解析しています...")
-        parser = Parser()
+        parser = BlockParser()
         parsedBlocks = parser.parseBlocks(raw_blocks)
 
         # 3. Generate層：PowerPointの生成
