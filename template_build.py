@@ -33,7 +33,7 @@ FONT_JP = "MS Gothic"
 FONT_EN = "Arial"
 
 # 出力先
-OUTPUT_PATH = "template.pptx"
+OUTPUT_PATH = "assets/template.pptx"
 
 
 # ============================================================
