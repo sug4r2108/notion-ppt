@@ -60,8 +60,11 @@ def main():
 
     # 2. Transform層：データの解析と変換
     print("データを解析しています...")
-    parser = BlockParser()
-    parsed_blocks = parser.parse_blocks(raw_blocks)
+    try:
+        parser = BlockParser()
+        parsed_blocks = parser.parse_blocks(raw_blocks)
+    except Exception as e:
+        print(f"データ解析中に予期せぬエラー: {e}")
 
     # 3. Generate層：PowerPointの生成
     print("PowerPointスライドを作成しています...")
