@@ -68,8 +68,12 @@ def main():
 
     # 3. Generate層：PowerPointの生成
     print("PowerPointスライドを作成しています...")
-    builder = PptxBuilder() # 今回はデフォルトの白紙テンプレートを使用
-    builder.build(parsed_blocks, OUTPUT_FILE)
+    try:
+        builder = PptxBuilder() # 今回はデフォルトの白紙テンプレートを使用
+        builder.build(parsed_blocks, OUTPUT_FILE)
+    except Exception as e:
+        print(f"Power Point生成中にエラー: {e}")
+        return
 
     print(f"\n成功! {OUTPUT_FILE} が作成されました！")
 
