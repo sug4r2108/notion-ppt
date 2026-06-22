@@ -7,7 +7,7 @@ class NotionFetcher:
         """
         self.client = Client(auth = apiKey)
 
-    def getBlocks(self, blockId: str) -> list:
+    def get_blocks(self, blockId: str) -> list:
         """
         指定されたブロックの子ブロックの全取得
         """

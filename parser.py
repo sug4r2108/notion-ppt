@@ -2,55 +2,55 @@ class BlockParser:
     def __init__(self):
         pass
 
-    def parseBlocks(self, rawBlocks: list) -> list:
+    def parse_blocks(self, rawBlocks: list) -> list:
         """
         Notionの生のブロックデータから、
         パワポ生成に必要な情報（タイプとテキスト）だけを抽出
         """
-        parsedData = []
+        parsed_data = []
 
         for block in rawBlocks:
             # ブロックの種類を取得
-            blockType = block.get("type")
-            if not blockType:
+            block_type = block.get("type")
+            if not block_type:
                 continue
 
             # ブロックの種類に応じた中身のデータを取得
-            blockContents = block.get(blockType, {})
+            block_contents = block.get(block_type, {})
 
             # 画像ブロックの特別処理
-            if blockType == "image":
-                imageType = blockContents.get("type") 
-                if imageType:
-                    imageURL = blockContents.get(imageType, {}).get("url")
+            if block_type == "image":
+                image_type = block_contents.get("type") 
+                if image_type:
+                    imageURL = block_contents.get(image_type, {}).get("url")
                     if imageURL:
-                        parsedData.append({
+                        parsed_data.append({
                             "type": "image",
                             "url": imageURL
                         })
                 continue
 
             # テキストを抽出
-            textArray = blockContents.get("rich_text", [])
-            text = self._extractText(textArray)
+            text_array = block_contents.get("rich_text", [])
+            text = self._extract_text(text_array)
 
             # テキストが空っぽのブロックはスキップ
             if not text.strip():
                 continue
 
             # 辞書型にしてリストに追加
-            parsedData.append({
-                "type": blockType,
+            parsed_data.append({
+                "type": block_type,
                 "text": text
             })
 
-        return parsedData
+        return parsed_data
 
-    def _extractText(self, textArray: list) -> str:
+    def _extract_text(self, text_array: list) -> str:
         """
         text配列の中から、装飾などを無視して純粋なテキストだけを繋ぎ合わせる
         """
         text = ""
-        for rt in textArray:
+        for rt in text_array:
             text += rt.get("plain_text", "")
         return text

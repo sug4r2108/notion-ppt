@@ -1,41 +1,63 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+import argparse
 from notionCli import NotionFetcher
 from parser import BlockParser
 from builder import PptxBuilder
 
+# 環境情報の取得
 load_dotenv()
 NotionAPIKey = os.getenv("NotionAPIKey")
 
+# CLI引数化
+def setup_args():
+    parser = argparse.ArgumentParser(
+        description = "NotionページからPowerPointを生成するCLIツール"
+    )
+
+    parser.add_argument(
+        "page_id",
+        help = "変換したいNotionページ"
+    )
+
+    parser.add_argument(
+        "-o", "--output",
+        default = None,
+        help = "出力ファイルパス（省略時は output/slide_YYYYMMDD.pptx）"
+    )
+
+    return parser.parse_args()
+
 def main():
-    # ご自身のページIDを設定してください
-    PAGE_ID = "380e3a3403dd809fa664fa68db8d9a8b"
+    args = setup_args()
 
-    now = datetime.now()
-    timeStamp = now.strftime("%Y%m%d")
-
-    # 出力先のフォルダ、ファイルの決定
+    # 出力先の決定
     OUTPUT_DIR = "output"
-    OUTPUT_FILENAME = f"VSeminer{timeStamp}.pptx"
-
-    OUTPUT_FILE = os.path.join(OUTPUT_DIR, OUTPUT_FILENAME)
+    if args.output:
+        OUTPUT_FILE = args.output
+    else:
+        timestamp = datetime.now().strftime("%Y%m%d")
+        OUTPUT_FILE = os.path.join(OUTPUT_DIR, f"slide_{timestamp}.pptx")
+    
+    # output/ ディレクトリの自動生成
+    os.makedirs(os.path.dirname(OUTPUT_FILE) or OUTPUT_DIR, exist_ok = True)
 
     try:
         # 1. Fetch層：データの取得
         print("Notionからデータを取得しています...")
         fetcher = NotionFetcher(NotionAPIKey)
-        raw_blocks = fetcher.getBlocks(PAGE_ID)
+        raw_blocks = fetcher.get_blocks(args.page_id)
 
         # 2. Transform層：データの解析と変換
         print("データを解析しています...")
         parser = BlockParser()
-        parsedBlocks = parser.parseBlocks(raw_blocks)
+        parsed_blocks = parser.parse_blocks(raw_blocks)
 
         # 3. Generate層：PowerPointの生成
         print("PowerPointスライドを作成しています...")
         builder = PptxBuilder() # 今回はデフォルトの白紙テンプレートを使用
-        builder.build(parsedBlocks, OUTPUT_FILE)
+        builder.build(parsed_blocks, OUTPUT_FILE)
 
         print(f"\n成功! {OUTPUT_FILE} が作成されました！")
 
