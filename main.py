@@ -3,6 +3,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import argparse
 from notionCli import NotionFetcher
+from notion_client.errors import APIResponseError
 from parser import BlockParser
 from builder import PptxBuilder
 
@@ -43,26 +44,32 @@ def main():
     # output/ ディレクトリの自動生成
     os.makedirs(os.path.dirname(OUTPUT_FILE) or OUTPUT_DIR, exist_ok = True)
 
+    
+    # 1. Fetch層：データの取得
+    print("Notionからデータを取得しています...")
     try:
-        # 1. Fetch層：データの取得
-        print("Notionからデータを取得しています...")
         fetcher = NotionFetcher(NotionAPIKey)
         raw_blocks = fetcher.get_blocks(args.page_id)
-
-        # 2. Transform層：データの解析と変換
-        print("データを解析しています...")
-        parser = BlockParser()
-        parsed_blocks = parser.parse_blocks(raw_blocks)
-
-        # 3. Generate層：PowerPointの生成
-        print("PowerPointスライドを作成しています...")
-        builder = PptxBuilder() # 今回はデフォルトの白紙テンプレートを使用
-        builder.build(parsed_blocks, OUTPUT_FILE)
-
-        print(f"\n成功! {OUTPUT_FILE} が作成されました！")
-
+    except APIResponseError as e:
+        print(f"Notion APIエラー: {e}")
+        print("ページIDやAPIキーを確認してください")
+        return
     except Exception as e:
-        print(f"\n❌ エラーが発生しました: {e}")
+        print(f"データ取得中に予期せぬエラー: {e}")
+        return
+
+    # 2. Transform層：データの解析と変換
+    print("データを解析しています...")
+    parser = BlockParser()
+    parsed_blocks = parser.parse_blocks(raw_blocks)
+
+    # 3. Generate層：PowerPointの生成
+    print("PowerPointスライドを作成しています...")
+    builder = PptxBuilder() # 今回はデフォルトの白紙テンプレートを使用
+    builder.build(parsed_blocks, OUTPUT_FILE)
+
+    print(f"\n成功! {OUTPUT_FILE} が作成されました！")
+
 
 if __name__ == "__main__":
     main()
