@@ -8,5 +8,7 @@ __pycache__/
 # テンプレート.pptxファイル
 assets/
 
+python_build.py
+
 # 生成される.pptxファイル
 output/
